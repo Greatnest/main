@@ -37,6 +37,12 @@ public class AddDeadLineCommand extends Command {
         if (byValue == null) {
             return;
         }
+        LocalDateTime currentTime = LocalDateTime.now();
+
+        if (currentTime.compareTo(byValue) > 0) {
+            throw new DukeException("OOPS!!! The time and date being set has already past, please set a time and date in the future");
+        }
+
         Deadline toAdd = new Deadline(task, byValue);
         taskList.addToArrayList(toAdd);
         //ui.showMessage("Got it. I've added this task: \n  " + toAdd.toString() + "\nNow you have " + taskList.getSize() + " task(s) in the list.");

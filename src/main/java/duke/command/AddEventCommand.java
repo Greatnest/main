@@ -35,9 +35,27 @@ public class AddEventCommand extends Command {
         String at = input.substring(dateIndex+4);
 
         LocalDateTime atValue = parseDate(at);
+
+        LocalDateTime currentTime = LocalDateTime.now();
+
         if (atValue == null) {
             return;
         }
+        if (currentTime.compareTo(atValue) > 0) {
+            throw new DukeException("OOPS!!! The time and date being set has already past, please set a time and date in the future");
+        }
+
+        for (int i = 0; i < taskList.getSize(); ++i) {
+            if (taskList.getTask(i) instanceof Event) {
+                Event newEvent = (Event) taskList.getTask(i);
+
+                if (atValue.compareTo(newEvent.getAt()) == 0) {
+                    throw new DukeException("OOPS!!! There is an event happening at the same time.");
+                }
+            }
+        }
+
+
         Event toAdd = new Event(task, atValue);
         taskList.addToArrayList(toAdd);
         //ui.showMessage("Got it. I've added this task: \n  " + toAdd.toString() + "\nNow you have " + taskList.getSize() + " task(s) in the list.");
