@@ -1,5 +1,6 @@
 package duke.task;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -24,6 +25,14 @@ public class Event extends Task {
     @Override
     public String toString() {
         return "[E]" + super.toString() + " (at: " + dateToString(at) + ")";
+    }
+
+    /**
+     * Sets the new timing.
+     * @param inputTiming New LocalDateTime to be set
+     */
+    public void setNewTiming(LocalDateTime inputTiming) {
+        this.at = inputTiming;
     }
 
     /**

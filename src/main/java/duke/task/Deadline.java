@@ -27,6 +27,14 @@ public class Deadline extends Task {
     }
 
     /**
+     * Sets the new timing.
+     * @param inputTiming New LocalDateTime to be set
+     */
+    public void setNewTiming(LocalDateTime inputTiming) {
+        this.by = inputTiming;
+    }
+
+    /**
      * Converts the input LocalDateTime to printable format in String
      * @param dateTime LocalDateTime object to be converted to String
      * @return String format of the LocalDateTime

@@ -25,8 +25,7 @@ public class DeleteTaskCommand extends Command {
         try {
             taskNumber = Integer.parseInt(input.substring(7));
         } catch (NumberFormatException e) {
-            ui.showError("Please enter a number.");
-            return;
+            throw new DukeException("Please enter a task number.");
         }
         if (taskNumber > taskList.getSize()) {
             throw new DukeException("You have entered a number larger than the number of tasks.");

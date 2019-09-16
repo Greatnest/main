@@ -1,46 +1,55 @@
 package duke.command;
 
 import duke.task.*;
+
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 
-
 /**
- * Class that holds the command to add a deadline
+ * Represents the command for a task to postponed
  * Subclass of Command
  */
-public class AddDeadLineCommand extends Command {
+public class PostponeTaskCommand extends Command {
     /**
-     * Constructor that takes in a flag to represent if it should exit and the input given by the User
+     * Takes in a flag to represent if it should exit and the input given by the User
      * @param isExit True if the program should exit after running this command, false otherwise
      * @param input Input given by the user
      */
-    public AddDeadLineCommand(boolean isExit, String input) {
+    public PostponeTaskCommand(boolean isExit, String input) {
         super(isExit, input);
     }
 
-    @Override
     public void execute(TaskList taskList, Ui ui, Storage storage) throws DukeException {
         if (input.length() < 10) {
-            throw new DukeException("OOPS!!! The description of a deadline cannot be empty.");
-        }
-        input = input.substring(9);
-        int dateIndex = input.indexOf("/by ");
-        if (dateIndex == -1) {
-            throw new DukeException("OOPS!!! Please indicate the deadline after \"/by\"");
+            throw new DukeException("OOPS!!! The task to postpone cannot be empty.");
         }
 
-        String by = input.substring(dateIndex+4);
-        String task = input.substring(0, dateIndex-1);
-        LocalDateTime byValue = parseDate(by);
-        if (byValue == null) {
-            return;
+        input = input.substring(9);
+
+        int dateIndex = input.indexOf("/to ");
+        if (dateIndex == -1) {
+            throw new DukeException("OOPS!!! Please indicate the new timing after \"/to\"");
         }
-        Deadline toAdd = new Deadline(task, byValue);
-        taskList.addToArrayList(toAdd);
-        //ui.showMessage("Got it. I've added this task: \n  " + toAdd.toString() + "\nNow you have " + taskList.getSize() + " task(s) in the list.");
-        ui.output = "Got it. I've added this task: \n  " + toAdd.toString() + "\nNow you have " + taskList.getSize() + " task(s) in the list.";
+
+        int taskNumber;
+        try {
+            taskNumber = Integer.parseInt(input.substring(0, dateIndex-1));
+        } catch (NumberFormatException e) {
+            throw new DukeException("Please enter a task number.");
+        }
+        LocalDateTime newTiming = parseDate(input.substring(dateIndex+4));
+
+        Task toPostpone = taskList.getTask(taskNumber-1);
+        if (toPostpone instanceof ToDo) {
+            throw new DukeException("The task you selected has no deadline or timing.");
+        } else if (toPostpone instanceof Event) {
+           ((Event) toPostpone).setNewTiming(newTiming);
+        } else if (toPostpone instanceof Deadline) {
+            ((Deadline) toPostpone).setNewTiming(newTiming);
+        }
+        ui.output = "Here is the task that you have postponed:\n" + toPostpone.toString();
         storage.saveToFile();
     }
 
