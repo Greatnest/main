@@ -21,6 +21,14 @@ public class Event extends Task {
         this.at = at;
     }
 
+    /**
+     * Returns the timing of the event.
+     * @return LocalDateTime object representing the timing
+     */
+    public LocalDateTime getAt() {
+        return this.at;
+    }
+
     @Override
     public String toString() {
         return "[E]" + super.toString() + " (at: " + dateToString(at) + ")";

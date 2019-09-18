@@ -109,41 +109,43 @@ public class Storage {
      */
     public void saveToFile() {
         String toSave = "";
-        createFileAndDirectory();
+        if (this.filePath != "") {
+            createFileAndDirectory();
 
-        for (int i = 0; i < TaskList.getSize(); ++i) {
-            Task value = TaskList.getTask(i);
-            String taskType = "";
-            String className = value.getClass().getSimpleName();
-            int isDone = 0;
-            String description = value.description;
-            String newDate = "";
+            for (int i = 0; i < TaskList.getSize(); ++i) {
+                Task value = TaskList.getTask(i);
+                String taskType = "";
+                String className = value.getClass().getSimpleName();
+                int isDone = 0;
+                String description = value.description;
+                String newDate = "";
 
-            if (className.equals("ToDo")) {
-                taskType = "T";
-            } else if (className.equals("Deadline")) {
-                taskType = "D";
-                newDate = unparseDate(((Deadline) value).by);
-            } else if (className.equals("Event")) {
-                taskType = "E";
-                newDate = unparseDate(((Event) value).at);
-            }
+                if (className.equals("ToDo")) {
+                    taskType = "T";
+                } else if (className.equals("Deadline")) {
+                    taskType = "D";
+                    newDate = unparseDate(((Deadline) value).by);
+                } else if (className.equals("Event")) {
+                    taskType = "E";
+                    newDate = unparseDate(((Event) value).at);
+                }
 
-            if (value.isDone) {
-                isDone = 1;
-            } else {
-                isDone = 0;
+                if (value.isDone) {
+                    isDone = 1;
+                } else {
+                    isDone = 0;
+                }
+                if (newDate != "") {
+                    toSave += taskType + " | " + Integer.toString(isDone) + " | " + description + " | " + newDate + "\n";
+                } else {
+                    toSave += taskType + " | " + Integer.toString(isDone) + " | " + description + "\n";
+                }
             }
-            if (newDate != "") {
-                toSave += taskType + " | " + Integer.toString(isDone) + " | " + description + " | " + newDate + "\n";
-            } else {
-                toSave += taskType + " | " + Integer.toString(isDone) + " | " + description + "\n";
+            try {
+                Files.writeString(Paths.get(this.filePath), toSave);
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-        }
-        try {
-            Files.writeString(Paths.get(this.filePath), toSave);
-        } catch(Exception e) {
-            e.printStackTrace();
         }
     }
 }
