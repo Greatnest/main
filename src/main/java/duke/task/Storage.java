@@ -58,6 +58,13 @@ public class Storage {
                             newDeadline.markAsDone();
                         }
                         taskList.add(newDeadline);
+                    } else if (value.charAt(0) == 'W') {
+                        DoWithinPeriod newDoWithinPeriod = new DoWithinPeriod(splitInput[2],
+                                parseDate(splitInput[3]), parseDate(splitInput[4]));
+                        if (splitInput[1].equals("1")) {
+                            newDoWithinPeriod.markAsDone();
+                        }
+                        taskList.add(newDoWithinPeriod);
                     }
                 }
             } else {
@@ -118,6 +125,7 @@ public class Storage {
             int isDone = 0;
             String description = value.description;
             String newDate = "";
+            String endDate = "";
 
             if (className.equals("ToDo")) {
                 taskType = "T";
@@ -127,6 +135,10 @@ public class Storage {
             } else if (className.equals("Event")) {
                 taskType = "E";
                 newDate = unparseDate(((Event) value).at);
+            } else if (className.equals("DoWithinPeriod")) {
+                taskType = "W";
+                newDate = unparseDate(((DoWithinPeriod) value).from);
+                endDate = unparseDate(((DoWithinPeriod) value).to);
             }
 
             if (value.isDone) {
@@ -135,7 +147,12 @@ public class Storage {
                 isDone = 0;
             }
             if (newDate != "") {
-                toSave += taskType + " | " + Integer.toString(isDone) + " | " + description + " | " + newDate + "\n";
+                if (endDate != "") {
+                    toSave += taskType + " | " + Integer.toString(isDone) + " | " + description + " | " + newDate + " | " + endDate + "\n";
+
+                } else {
+                    toSave += taskType + " | " + Integer.toString(isDone) + " | " + description + " | " + newDate + "\n";
+                }
             } else {
                 toSave += taskType + " | " + Integer.toString(isDone) + " | " + description + "\n";
             }

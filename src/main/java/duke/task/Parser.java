@@ -29,6 +29,8 @@ public class Parser {
             return new DeleteTaskCommand(false, input);
         } else if (input.equals("bye")) {
             return new ExitCommand(true, "");
+        } else if (input.startsWith("dowithin ")) {
+            return new AddDoWithinPeriodCommand(false, input);
         } else {
             throw new DukeException("OOPS!!! I'm sorry, but I don't know what that means :-(");
         }
