@@ -12,9 +12,11 @@ public class Budget {
 
     HashMap<String, Double> categoryBudgets;
     DecimalFormat df;
+    double totalBudget;
 
     public Budget() {
         this.categoryBudgets = new HashMap<String, Double>();
+        this.totalBudget = 0;
         df = new DecimalFormat("#.00");
     }
 
@@ -24,6 +26,7 @@ public class Budget {
      */
     public Budget(HashMap<String, Double> newBudget) {
         this.categoryBudgets = newBudget;
+        this.totalBudget = 0;
         df = new DecimalFormat("#.00");
     }
 
@@ -57,7 +60,11 @@ public class Budget {
     }
 
     public void addNewBudget(String category, double budget) {
+        if (categoryBudgets.containsKey(category)) {
+            this.totalBudget -= budget;
+        }
         this.categoryBudgets.put(category, budget);
+        this.totalBudget += budget;
     }
 
     public HashMap<String, Double> getBudget() {
@@ -68,4 +75,7 @@ public class Budget {
         return this.categoryBudgets.size();
     }
 
+    public double getTotalBudget() {
+        return this.totalBudget;
+    }
 }
