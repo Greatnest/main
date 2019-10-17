@@ -22,6 +22,7 @@ public class GraphCommand extends Command {
     
     public GraphCommand(String input) {
         super(false, input);
+        verticalAxis = new ArrayList<String>();
     }
     
     public static double roundToHalf(double d) {
