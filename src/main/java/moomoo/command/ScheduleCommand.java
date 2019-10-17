@@ -5,7 +5,7 @@ import moomoo.task.ScheduleList;
 import moomoo.task.Budget;
 import moomoo.task.MooMooException;
 import moomoo.task.CategoryList;
-import moomoo.task.TransactionList;
+import moomoo.task.Category;
 import moomoo.task.Ui;
 import moomoo.task.Storage;
 
@@ -23,7 +23,7 @@ public class ScheduleCommand extends Command {
     }
 
     @Override
-    public void execute(ScheduleList calendar, Budget budget, CategoryList catList, TransactionList transList,
+    public void execute(ScheduleList calendar, Budget budget, CategoryList catList, Category category,
                         Ui ui, Storage storage) throws MooMooException {
         if (input.length() < 8) {
             throw new MooMooException("OOPS!!! To create a schedule payment, "

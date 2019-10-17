@@ -21,19 +21,16 @@ import java.util.Map;
 public class Storage {
     private DecimalFormat df;
     private String budgetFilePath;
-    private String expenditureFilePath;
-    private String categoryFilePath;
+    private String calendarFilePath;
 
     /**
      * Initializes storage and the filepath for each file.
      * @param budgetFilePath File path to store the budget into.
-     * @param expenditureFilePath File path to store all expenditures
-     * @param categoryFilePath File path to store all categories
+     * @param calendarFilePath File path to store calendar events.
      */
-    public Storage(String budgetFilePath, String expenditureFilePath, String categoryFilePath) {
+    public Storage(String budgetFilePath, String calendarFilePath) {
         this.budgetFilePath = budgetFilePath;
-        this.expenditureFilePath = expenditureFilePath;
-        this.categoryFilePath = categoryFilePath;
+        this.calendarFilePath = calendarFilePath;
         df = new DecimalFormat("#.00");
     }
 
@@ -112,8 +109,8 @@ public class Storage {
     public ArrayList<SchedulePayment> loadCalendar() throws MooMooException {
         ArrayList<SchedulePayment> scheduleArray = new ArrayList<>();
         try {
-            if (Files.isRegularFile(Paths.get(this.filePath))) {
-                List<String> input = Files.readAllLines(Paths.get(this.filePath));
+            if (Files.isRegularFile(Paths.get(this.calendarFilePath))) {
+                List<String> input = Files.readAllLines(Paths.get(this.calendarFilePath));
                 for (String s : input) {
                     if (s.startsWith("d/")) {
                         String[] splitInput = s.split(" ", 2);
@@ -190,7 +187,7 @@ public class Storage {
      * Writes scheduled payments to file.
      */
     public void saveScheduleToFile(ScheduleList calendar) throws MooMooException {
-        createFileAndDirectory();
+        createFileAndDirectory(this.calendarFilePath);
 
         String list = "Schedule: \n";
         System.out.println(calendar.fullSchedule.size());
@@ -198,10 +195,12 @@ public class Storage {
             list += "d/" + c.date + " t/" + c.tasks + "\n";
         }
         try {
-            Files.writeString(Paths.get(this.filePath), list);
+            Files.writeString(Paths.get(this.calendarFilePath), list);
         } catch (Exception e) {
             throw new MooMooException("Unable to write to file. Please try again.");
         }
+    }
+
     /**
      * Checks if a category is found in the list of categories.
      * @return true if it exists.

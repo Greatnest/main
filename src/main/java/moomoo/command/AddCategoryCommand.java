@@ -19,8 +19,8 @@ public class AddCategoryCommand extends Command {
     }
 
     @Override
-    public void execute(ScheduleList calendar, Budget budget, CategoryList categoryList, Category category, Ui ui, Storage storage)
-            throws MooMooException {
+    public void execute(ScheduleList calendar, Budget budget, CategoryList categoryList,
+                        Category category, Ui ui, Storage storage) throws MooMooException {
         super.execute(calendar, budget, categoryList, category, ui, storage);
 
         categoryList.list(ui);
