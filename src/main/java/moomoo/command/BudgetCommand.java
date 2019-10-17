@@ -529,7 +529,8 @@ public class BudgetCommand extends Command {
         if (categories == null && category.equals("")) {
             if (endMonth.equals("")) {
                 outputValue = "Your total savings for " + start.getMonth()
-                        + " " + start.getYear() + " is: " + df.format(budget.getTotalBudget() - catList.getMonthlyGrandTotal(start.getMonthValue()));
+                        + " " + start.getYear() + " is: " + df.format(budget.getTotalBudget()
+                        - catList.getMonthlyGrandTotal(start.getMonthValue()));
             } else {
                 outputValue = "Your total savings from " + start.getMonth()
                         + " " + start.getYear() + " to "
@@ -560,7 +561,8 @@ public class BudgetCommand extends Command {
                 if (endMonth.equals("")) {
                     outputValue += "Your savings for " + iteratorCategory + " for " + start.getMonth()
                             + " " + start.getYear() + " is: $"
-                            + df.format(budget.getBudgetFromCategory(iteratorCategory) - currentCategory.getTotalExpenditure())  + "\n";
+                            + df.format(budget.getBudgetFromCategory(iteratorCategory)
+                            - currentCategory.getTotalExpenditure())  + "\n";
                 } else {
                     int numberOfMonths = end.getMonthValue() - start.getMonthValue();
                     double totalExpenditure = 0;
@@ -570,7 +572,8 @@ public class BudgetCommand extends Command {
                     outputValue += "Your savings for " + iteratorCategory + " from " + start.getMonth() + " "
                             + start.getYear() + " to "
                             + end.getMonth() + " " + end.getYear() + " is: $"
-                            + df.format(((numberOfMonths * budget.getBudgetFromCategory(iteratorCategory)) - totalExpenditure)) + "\n";
+                            + df.format(((numberOfMonths * budget.getBudgetFromCategory(iteratorCategory))
+                            - totalExpenditure)) + "\n";
                 }
             }
         }

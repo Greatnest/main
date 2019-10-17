@@ -9,11 +9,14 @@ import java.util.Map;
  * Holds a map for the budget for each category.
  */
 public class Budget {
-
     HashMap<String, Double> categoryBudgets;
     DecimalFormat df;
     double totalBudget;
 
+    /**
+     * Initializes values to default values if no previous budget information is found.
+     * Initializes DecimalFormat to force doubles to display with 2 decimal places.
+     */
     public Budget() {
         this.categoryBudgets = new HashMap<String, Double>();
         this.totalBudget = 0;
@@ -59,6 +62,11 @@ public class Budget {
         }
     }
 
+    /**
+     * Adds budget to the HashMap and re-adds to total budget if budget is changed or added.
+     * @param category Category to which the budget was set
+     * @param budget Budget to set for the corresponding category
+     */
     public void addNewBudget(String category, double budget) {
         if (categoryBudgets.containsKey(category)) {
             this.totalBudget -= budget;
