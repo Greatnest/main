@@ -80,23 +80,6 @@ public class BudgetCommandTest {
 
         budgetCommand = new BudgetCommand(false, "budget list c/places to go");
         budgetCommand.execute(newBudget, newCatList, newTransList, newUi, newStorage);
-
         assertEquals("Your budget for places to go is: $460.00", newUi.printResponse());
-
-//        budgetCommand = new BudgetCommand(false, "budget savings s/10/2019 e/12/2019");
-//        budgetCommand.execute(newBudget, newCatList, newTransList, newUi, newStorage);
-//
-//        assertEquals("Your total savings from OCTOBER 2019 to DECEMBER 2019 is: ", newUi.printResponse());
-//
-//        budgetCommand = new BudgetCommand(false, "budget savings s/01/2018");
-//        budgetCommand.execute(newBudget, newCatList, newTransList, newUi, newStorage);
-//
-//        assertEquals("Your total savings for JANUARY 2018 is: ", newUi.printResponse());
-//
-//        budgetCommand = new BudgetCommand(false, "budget savings c/shoes c/food s/07/2019 e/09/2019");
-//        budgetCommand.execute(newBudget, newCatList, newTransList, newUi, newStorage);
-//
-//        assertEquals("Your savings for shoes from JULY 2019 to SEPTEMBER 2019 is: $800.00\n"
-//                + "Your savings for food from JULY 2019 to SEPTEMBER 2019 is: $400.00", newUi.printResponse());
     }
 }
