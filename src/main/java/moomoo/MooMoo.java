@@ -51,7 +51,7 @@ public class MooMoo {
             category = new Category();
         } */
 
-        HashMap<String, Double> loadedBudget = storage.loadBudget(categoryList.getCategoryList(), ui);
+        HashMap<String, HashMap<String, Double>> loadedBudget = storage.loadBudget(categoryList.getCategoryList(), ui);
         if (loadedBudget == null) {
             ui.showResponse();
             budget = new Budget();

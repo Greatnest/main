@@ -8,6 +8,9 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.DecimalFormat;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -98,33 +101,51 @@ public class Storage {
      * Loads in budgetFile not found. New file will be created from an existing file into a created HashMap object.
      * @return HashMap object consisting of the categories and corresponding budget read from file.
      */
-    public HashMap<String, Double> loadBudget(ArrayList<Category> catList, Ui ui) {
+    public HashMap<String, HashMap<String, Double>> loadBudget(ArrayList<Category> catList, Ui ui) {
         try {
             if (Files.isRegularFile(Paths.get(this.budgetFilePath))) {
-                HashMap<String, Double> loadedBudgets = new HashMap<String, Double>();
+                HashMap<String, HashMap<String, Double>> loadedBudgets = new HashMap<>();
                 List<String> readInput = Files.readAllLines(Paths.get(this.budgetFilePath));
-                String category = "";
-                double budget = 0;
+                LocalDate date;
+                String stringDate = "";
 
                 for (int i = 0; i < readInput.size(); ++i) {
-                    if (i % 2 == 1) {
-                        if (!"".equals(category)) {
-                            budget = Double.parseDouble(readInput.get(i));
-                            loadedBudgets.put(category, budget);
+                    String input = readInput.get(i);
+                    if (input.contains("|")) {
+                        if (stringDate == "") {
+                            throw new MooMooException("Your data file has been corrupted. Please delete it.");
                         }
-                        category = "";
+                        String[] splitInput = input.split("\\|");
+                        if (loadedBudgets.containsKey(stringDate)) {
+                            try {
+                                loadedBudgets.get(stringDate).put(splitInput[0], Double.parseDouble(splitInput[1]));
+                            } catch (NumberFormatException e) {
+                                throw new MooMooException("Your data file has been corrupted. Please delete it.");
+                            }
+                        } else {
+                            HashMap<String, Double> newHashMap = new HashMap<>();
+                            try {
+                                newHashMap.put(splitInput[0], Double.parseDouble(splitInput[1]));
+                            } catch (NumberFormatException e) {
+                                throw new MooMooException("Your data file has been corrupted. Please delete it.");
+                            }
+                            loadedBudgets.put(stringDate, newHashMap);
+                        }
                     } else {
-                        if (isInCategoryList(catList, readInput.get(i))) {
-                            category = readInput.get(i);
+                        stringDate = input;
+                        date = parseMonth(input);
+                        if (date == null) {
+                            throw new MooMooException("Your data file has been corrupted. Please delete it.");
                         }
                     }
                 }
                 return loadedBudgets;
             } else {
                 ui.setOutput("Budget File not found. New file will be created");
+                createFileAndDirectory(this.budgetFilePath);
                 return null;
             }
-        } catch (IOException e) {
+        } catch (IOException | MooMooException e) {
             ui.setOutput("Unable to write to file. Please retry again.");
         }
         return null;
@@ -234,10 +255,19 @@ public class Storage {
     public void saveBudgetToFile(Budget budget) throws MooMooException {
         createFileAndDirectory(this.budgetFilePath);
         String toSave = "";
-        Iterator budgetIterator = budget.getBudget().entrySet().iterator();
-        while (budgetIterator.hasNext()) {
-            Map.Entry mapElement = (Map.Entry)budgetIterator.next();
-            toSave += mapElement.getKey() + "\n" + mapElement.getValue() + "\n";
+        Iterator<Map.Entry<String, HashMap<String, Double>>> monthIterator = budget.getBudget().entrySet().iterator();
+
+        while (monthIterator.hasNext()) {
+            Map.Entry<String, HashMap<String, Double>> monthElement = monthIterator.next();
+            HashMap<String, Double> budgetHashMap;
+            budgetHashMap = monthElement.getValue();
+            Iterator<Map.Entry<String, Double>> budgetIterator = budgetHashMap.entrySet().iterator();
+            toSave += "01/" + monthElement.getKey() + "\n";
+            while (budgetIterator.hasNext()) {
+                Map.Entry<String, Double> budgetElement = budgetIterator.next();
+                toSave += budgetElement.getKey() + "|" + budgetElement.getValue() + '\n';
+            }
+
         }
         try {
             Files.writeString(Paths.get(this.budgetFilePath), toSave);
@@ -274,5 +304,14 @@ public class Storage {
             }
         }
         return false;
+    }
+
+    private static LocalDate parseMonth(String inputDate) {
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/M/yyyy");
+            return LocalDate.parse(inputDate, formatter);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

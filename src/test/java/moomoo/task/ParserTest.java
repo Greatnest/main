@@ -85,18 +85,23 @@ public class ParserTest {
         CategoryListStub newCatList = new CategoryListStub();
         newCatList.add(null);
 
-        Command c = newParser.parse("budget set c/food c/laptop b/123.45 c/places to go b/150", newUi);
+        Command c = newParser.parse("budget set c/food c/laptop b/123.45 c/places to go b/150 "
+                + "s/01/2019 e/10/2019", newUi);
         c.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
-        assertEquals("You have set $123.45 as the budget for food\n"
-                + "You have set $123.45 as the budget for laptop\n"
-                + "You have set $150.00 as the budget for places to go\n", newUi.returnResponse());
+        assertEquals("You have set $123.45 as the budget for food. If the budget has already been set, "
+                + "no changes will be done. Please use budget edit.\n"
+                + "You have set $123.45 as the budget for laptop. If the budget has already been set, "
+                + "no changes will be done. Please use budget edit.\n"
+                + "You have set $150.00 as the budget for places to go. If the budget has already been set, "
+                + "no changes will be done. Please use budget edit.\n", newUi.returnResponse());
 
         try {
             c = newParser.parse("budget set b/100 c/places to go b/150", newUi);
             c.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
         } catch (MooMooException e) {
-            assertEquals("Please input in this format \"c/CATEGORY b/BUDGET\"", e.getMessage());
+            assertEquals("Please input in this format \"c/CATEGORY b/BUDGET "
+                    + "s/STARTMONTHYEAR e/STARTMONTHYEAR\"", e.getMessage());
         }
     }
 
@@ -111,21 +116,32 @@ public class ParserTest {
         UiStub newUi = new UiStub();
         StorageStub newStorage = new StorageStub();
 
-        Command c = newParser.parse("budget set c/food b/100 c/laptop b/125 c/places to go b/123", newUi);
+        Command c = newParser.parse("budget set c/food b/100 c/laptop b/125 c/places to go b/123 "
+                + "s/01/2019 e/10/2019", newUi);
         c.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
-        c = newParser.parse("budget edit c/food c/laptop b/100 c/places to go b/150", newUi);
+        c = newParser.parse("budget edit c/food c/laptop b/100 c/places to go b/150 s/10/2019 e/09/2019", newUi);
         c.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
-        assertEquals("The budget for food is the same.\n"
-            + "You have changed the budget for laptop from $125.00 to $100.00\n"
-            + "You have changed the budget for places to go from $123.00 to $150.00\n", newUi.returnResponse());
+        assertEquals("You have changed the budget for food to $100.00. "
+                + "Please view the changed budget using budget list.\n"
+                + "You have changed the budget for laptop to $100.00. "
+                + "Please view the changed budget using budget list.\n"
+                + "You have changed the budget for places to go to $150.00. "
+                + "Please view the changed budget using budget list.\n", newUi.returnResponse());
 
         try {
             c = newParser.parse("budget edit b/100 c/places to go b/150", newUi);
             c.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
-
         } catch (MooMooException e) {
-            assertEquals("Please input in this format \"c/CATEGORY b/BUDGET\"", e.getMessage());
+            assertEquals("Please input in this format \"c/CATEGORY b/BUDGET "
+                    + "s/STARTMONTHYEAR e/STARTMONTHYEAR\"", e.getMessage());
+        }
+
+        try {
+            c = newParser.parse("budget edit c/places to go b/150", newUi);
+            c.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
+        } catch (MooMooException e) {
+            assertEquals("Please set a start month and year in this format \"s/01/2019\"\n", e.getMessage());
         }
     }
 

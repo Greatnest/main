@@ -43,11 +43,11 @@ public class GraphCategoryCommand extends Command {
                         Category category, Ui ui, Storage storage)
             throws MooMooException {
         Category cat;
-        try {
-            cat = catList.get(categoryName);
-        } catch (Exception e) {
-            throw new MooMooException("OH NO! No such category exists!");
+        cat = catList.get(categoryName);
+        if (cat == null) {
+            throw new MooMooException("Sorry I could not find a category named " + categoryName);
         }
+
         if (cat.size() == 0) {
             throw new MooMooException("OOPS!!! MooMoo cannot find any expenditure data :(");
         }

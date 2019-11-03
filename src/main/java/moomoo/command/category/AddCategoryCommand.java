@@ -1,5 +1,6 @@
 package moomoo.command.category;
 
+import moomoo.MooMoo;
 import moomoo.command.Command;
 import moomoo.task.MooMooException;
 import moomoo.task.Storage;
@@ -27,6 +28,9 @@ public class AddCategoryCommand extends Command {
         if (categoryList.hasCategory(input)) {
             throw new MooMooException("You already have a category named " + input + ".");
         } else {
+            if (input.contains("|")) {
+                throw new MooMooException("Please do not use | in your category");
+            }
             categoryList.add(newCategory);
             storage.saveCategoryToFile(input);
             ui.showNewCategoryMessage(input);

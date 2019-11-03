@@ -14,8 +14,8 @@ public class StorageStub extends Storage {
     }
 
     @Override
-    public HashMap<String, Double> loadBudget(ArrayList<Category> catList, Ui ui) {
-        HashMap<String, Double> newHashMap = new HashMap<>();
+    public HashMap<String, HashMap<String, Double>> loadBudget(ArrayList<Category> catList, Ui ui) {
+        HashMap<String, HashMap<String, Double>> newHashMap = new HashMap<>();
         return newHashMap;
     }
 }

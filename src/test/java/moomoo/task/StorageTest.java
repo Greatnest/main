@@ -10,8 +10,11 @@ import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -52,23 +55,28 @@ public class StorageTest {
                 expenditureFile.getPath());
         Budget newBudget = new Budget();
 
-        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets);
+        LocalDate startDate = LocalDate.of(2017, 9, 15);
+        LocalDate endDate = LocalDate.of(2019, 2, 15);
+
+        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets, startDate, endDate);
         setBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
-        HashMap<String, Double> newHashMap = newStorage.loadBudget(newCatList.getCategoryList(), newUi);
-        assertEquals(60.0, newHashMap.get("window"));
-        assertEquals(153.34, newHashMap.get("sweets"));
-        assertEquals(13840.45, newHashMap.get("laptop"));
+        HashMap<String, HashMap<String, Double>> newHashMap =
+                newStorage.loadBudget(newCatList.getCategoryList(), newUi);
+
+        assertEquals(60.0, newHashMap.get("01/10/2017").get("window"));
+        assertEquals(153.34, newHashMap.get("01/7/2018").get("sweets"));
+        assertEquals(13840.45, newHashMap.get("01/10/2018").get("laptop"));
 
         budgets.set(0, 500.23);
         budgets.set(2, 123.45);
 
-        EditBudgetCommand editBudget = new EditBudgetCommand(false, categories, budgets);
+        EditBudgetCommand editBudget = new EditBudgetCommand(false, categories, budgets, startDate, endDate);
         editBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
         newHashMap = newStorage.loadBudget(newCatList.getCategoryList(), newUi);
-        assertEquals(500.23, newHashMap.get("window"));
-        assertEquals(153.34, newHashMap.get("sweets"));
-        assertEquals(123.45, newHashMap.get("laptop"));
+        assertEquals(500.23, newHashMap.get("01/10/2017").get("window"));
+        assertEquals(153.34, newHashMap.get("01/10/2018").get("sweets"));
+        assertEquals(123.45, newHashMap.get("01/1/2019").get("laptop"));
     }
 }

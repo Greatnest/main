@@ -1,5 +1,6 @@
 package moomoo.task;
 
+import moomoo.MooMoo;
 import moomoo.command.Command;
 import moomoo.command.GraphCategoryCommand;
 import moomoo.command.GraphTotalCommand;
@@ -241,6 +242,8 @@ public class Parser {
         ArrayList<String> categories = new ArrayList<>();
         ArrayList<Double> budgets = new ArrayList<>();
         String inputCategory = "";
+        String startMonth = "";
+        String endMonth = "";
         
         while (!"".equals(input)) {
             if (input.startsWith("c/")) {
@@ -257,7 +260,8 @@ public class Parser {
             } else if (input.startsWith("b/")) {
                 double budget = 0;
                 if ("".equals(inputCategory)) {
-                    throw new MooMooException("Please input in this format \"c/CATEGORY b/BUDGET\"");
+                    throw new MooMooException("Please input in this format \"c/CATEGORY b/BUDGET"
+                            + " s/STARTMONTHYEAR e/STARTMONTHYEAR\"");
                 }
 
                 try {
@@ -275,11 +279,27 @@ public class Parser {
                     budgets.add(budget);
                 }
                 inputCategory = "";
+            } else if (input.startsWith("s/")) {
+                if (!"".equals(inputCategory)) {
+                    categories.add(inputCategory);
+                    inputCategory = "";
+                }
+                if (!"".equals(startMonth)) {
+                    throw new MooMooException("Please only set 1 starting period.\n");
+                }
+                startMonth = input.substring(2);
+            } else if (input.startsWith("e/")) {
+                if (!"".equals(endMonth)) {
+                    throw new MooMooException("Please only set 1 ending period.\n");
+                }
+                endMonth = input.substring(2);
+
             } else {
                 if (!"".equals(inputCategory)) {
                     inputCategory += " " + input;
                 } else {
-                    throw new MooMooException("Please input in this format \"c/CATEGORY b/BUDGET\"");
+                    throw new MooMooException("Please input in this format \"c/CATEGORY b/BUDGET "
+                            + "s/STARTMONTHYEAR e/STARTMONTHYEAR\"");
                 }
             }
             try {
@@ -290,13 +310,30 @@ public class Parser {
         }
 
         if (categories.size() == 0 || budgets.size() == 0) {
-            throw new MooMooException("You have entered the command wrongly. "
-                    + "Please input in this format \"c/CATEGORY b/BUDGET\"");
+            throw new MooMooException("Please input in this format \"c/CATEGORY b/BUDGET"
+                    + " s/STARTMONTHYEAR e/STARTMONTHYEAR\"");
+
         }
+
+        if ("".equals(startMonth)) {
+            throw new MooMooException("Please set a start month and year in this format \"s/01/2019\"\n");
+        }
+
+        LocalDate startDate = parseMonth(startMonth);
+        LocalDate endDate = parseMonth(endMonth);
+
+        if (startDate == null) {
+            throw new MooMooException("Please set a start month and year in this format \"s/01/2019\"\n");
+        }
+
+        if (!"".equals(endMonth) && endDate == null) {
+            throw new MooMooException("Please set an end month and year in this format \"e/01/2019\"\n");
+        }
+
         if (isEdit) {
-            return new EditBudgetCommand(false, categories, budgets);
+            return new EditBudgetCommand(false, categories, budgets, startDate, endDate);
         } else {
-            return new SetBudgetCommand(false, categories, budgets);
+            return new SetBudgetCommand(false, categories, budgets, startDate, endDate);
 
         }
     }
@@ -308,11 +345,12 @@ public class Parser {
         try {
             input = scanner.next();
         } catch (Exception e) {
-            return new ListBudgetCommand(false, categories);
-            
+            throw new MooMooException("Please input in this format \"c/CATEGORY s/STARTMONTHYEAR e/STARTMONTHYEAR\"");
         }
+        String startMonth = "";
         String inputCategory = "";
-        
+        String endMonth = "";
+
         while (!"".equals(input)) {
             if (input.startsWith("c/")) {
                 if (!"".equals(inputCategory)) {
@@ -320,11 +358,27 @@ public class Parser {
                     inputCategory = "";
                 }
                 inputCategory = input.substring(2).toLowerCase();
+            } else if (input.startsWith("s/")) {
+                if (!"".equals(inputCategory)) {
+                    categories.add(inputCategory);
+                    inputCategory = "";
+                }
+                if (!"".equals(startMonth)) {
+                    throw new MooMooException("Please only set 1 starting period.\n");
+                }
+                startMonth = input.substring(2);
+            } else if (input.startsWith("e/")) {
+                if (!"".equals(endMonth)) {
+                    throw new MooMooException("Please only set 1 ending period.\n");
+                }
+                endMonth = input.substring(2);
+
             } else {
                 if (!"".equals(inputCategory)) {
                     inputCategory += " " + input;
                 } else {
-                    throw new MooMooException("Please input in this format \"c/CATEGORY\"");
+                    throw new MooMooException("Please input in this format \"c/CATEGORY "
+                            + "s/STARTMONTHYEAR e/STARTMONTHYEAR\"");
                 }
             }
             try {
@@ -336,7 +390,23 @@ public class Parser {
                 break;
             }
         }
-        return new ListBudgetCommand(false, categories);
+
+        if ("".equals(startMonth)) {
+            throw new MooMooException("Please set a start month and year in this format \"s/01/2019\"\n");
+        }
+
+        LocalDate startDate = parseMonth(startMonth);
+        LocalDate endDate = parseMonth(endMonth);
+
+        if (startDate == null) {
+            throw new MooMooException("Please set a start month and year in this format \"s/01/2019\"\n");
+        }
+
+        if (!"".equals(endMonth) && endDate == null) {
+            throw new MooMooException("Please set an end month and year in this format \"e/01/2019\"\n");
+        }
+
+        return new ListBudgetCommand(false, categories, startDate, endDate);
     }
     
     private static Command savingsBudget(Scanner scanner) throws MooMooException {

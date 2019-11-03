@@ -9,6 +9,7 @@ import moomoo.task.Storage;
 import moomoo.task.Ui;
 
 import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 
 /**
@@ -17,6 +18,8 @@ import java.util.ArrayList;
 public class EditBudgetCommand extends Command {
     private ArrayList<String> categories;
     private ArrayList<Double> budgets;
+    private LocalDate start;
+    private LocalDate end;
     private DecimalFormat df;
 
     /**
@@ -25,10 +28,13 @@ public class EditBudgetCommand extends Command {
      * @param categories List of categories to edit.
      * @param budgets List of budgets to change corresponding categories to.
      */
-    public EditBudgetCommand(boolean isExit, ArrayList<String> categories, ArrayList<Double> budgets) {
+    public EditBudgetCommand(boolean isExit, ArrayList<String> categories, ArrayList<Double> budgets,
+                             LocalDate start, LocalDate end) {
         super(isExit, "");
         this.categories = categories;
         this.budgets = budgets;
+        this.start = start;
+        this.end = end;
         df = new DecimalFormat("#.00");
 
     }
@@ -44,23 +50,57 @@ public class EditBudgetCommand extends Command {
             double categoryBudget = budgets.get(i);
 
             if (catList.get(categoryName) != null) {
-                double currentBudget = budget.getBudgetFromCategory(categoryName);
-                if (currentBudget == 0) {
-                    outputValue += "Budget for " + categoryName + " has not been set. Please set it first.\n";
-                    continue;
-                }
-                if (currentBudget == categoryBudget) {
-                    outputValue += "The budget for " + categoryName + " is the same.\n";
-                    continue;
-                }
+                int numberOfYears = end.getYear() - start.getYear();
                 if (categoryBudget <= 0) {
                     outputValue += "Please set your budget for " + categoryName + " to a value more than 0\n";
                     continue;
                 }
-                isUpdated = true;
-                budget.addNewBudget(categoryName, categoryBudget);
-                outputValue += "You have changed the budget for " + categoryName
-                        + " from $" + df.format(currentBudget) + " to $" + df.format(categoryBudget) + "\n";
+                if (numberOfYears > 0) {
+                    int startMonthValue = start.getMonthValue();
+                    int endMonthValue = 12;
+                    for (int currentYear = start.getYear(); currentYear <= end.getYear(); ++currentYear) {
+                        for (int currentMonth = startMonthValue; currentMonth <= endMonthValue; ++currentMonth) {
+                            double currentBudget = budget.getBudgetFromCategoryMonthYear(categoryName,
+                                    currentMonth, currentYear);
+
+                            if (currentBudget == categoryBudget) {
+                                continue;
+                            }
+
+                            if (budget.getBudgetFromCategoryMonthYear(categoryName, currentMonth, currentYear) == 0) {
+                                continue;
+                            }
+
+
+
+                            isUpdated = true;
+                            budget.addNewBudgetMonthYear(categoryName, categoryBudget, currentMonth, currentYear);
+
+                        }
+                        startMonthValue = 1;
+                        if (currentYear == end.getYear() - 1) {
+                            endMonthValue = end.getMonthValue();
+                        }
+                    }
+                } else {
+                    for (int currentMonth = start.getMonthValue(); currentMonth < end.getMonthValue() + 1;
+                         ++currentMonth) {
+                        double currentBudget = categoryBudget;
+                        if (currentBudget == categoryBudget) {
+                            continue;
+                        }
+
+                        if (budget.getBudgetFromCategoryMonthYear(categoryName, currentMonth, start.getYear()) == 0) {
+                            continue;
+                        }
+
+                        isUpdated = true;
+                        budget.addNewBudgetMonthYear(categoryName, categoryBudget, currentMonth, start.getYear());
+                    }
+                }
+                outputValue += "You have changed the budget for " + categoryName + " to $"
+                        + df.format(categoryBudget) + ". Please view the changed budget using budget list.\n";
+
             } else {
                 outputValue += categoryName + " category does not exist. Please add it first.\n";
             }

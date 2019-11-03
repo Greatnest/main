@@ -54,11 +54,16 @@ public class BudgetCommandTest {
         StorageStub newStorage = new StorageStub();
         Budget newBudget = new Budget();
 
-        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets);
+        LocalDate startDate = LocalDate.of(2017, 9, 15);
+        LocalDate endDate = LocalDate.of(2019, 2, 15);
+
+        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets, startDate, endDate);
         setBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
-        assertEquals("You have set $50.00 as the budget for shoes\n"
-                + "You have set $100.00 as the budget for food\n"
+        assertEquals("You have set $50.00 as the budget for shoes. If the budget has already been set, "
+                + "no changes will be done. Please use budget edit.\n"
+                + "You have set $100.00 as the budget for food. If the budget has already been set, "
+                + "no changes will be done. Please use budget edit.\n"
                 + "Please set your budget for places to go to a value more than 0\n"
                 + "test value category does not exist. Please add it first.\n", newUi.returnResponse());
     }
@@ -97,19 +102,24 @@ public class BudgetCommandTest {
         StorageStub newStorage = new StorageStub();
         Budget newBudget = new Budget();
 
-        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets);
+        LocalDate startDate = LocalDate.of(2017, 9, 15);
+        LocalDate endDate = LocalDate.of(2019, 2, 15);
+
+        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets, startDate, endDate);
         setBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
         budgets.set(0, 300.0);
         budgets.set(1, -675.0);
         budgets.set(2, 675.0);
 
-        EditBudgetCommand editBudget = new EditBudgetCommand(false, categories, budgets);
+        EditBudgetCommand editBudget = new EditBudgetCommand(false, categories, budgets, startDate, endDate);
         editBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
-        assertEquals("You have changed the budget for shoes from $123.45 to $300.00\n"
+        assertEquals("You have changed the budget for shoes to $300.00. "
+                + "Please view the changed budget using budget list.\n"
                 + "Please set your budget for window to a value more than 0\n"
-                + "You have changed the budget for sweets from $217.00 to $675.00\n"
+                + "You have changed the budget for sweets to $675.00. "
+                + "Please view the changed budget using budget list.\n"
                 + "invalid value category does not exist. Please add it first.\n", newUi.returnResponse());
     }
 
@@ -149,7 +159,10 @@ public class BudgetCommandTest {
 
         Budget newBudget = new Budget();
 
-        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets);
+        LocalDate startDate = LocalDate.of(2018, 12, 15);
+        LocalDate endDate = LocalDate.of(2019, 2, 15);
+
+        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets, startDate, endDate);
         setBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
         ArrayList<String> listCategories = new ArrayList<>();
@@ -160,14 +173,24 @@ public class BudgetCommandTest {
         listCategories.add("Test Value");
         listCategories.add("sweets");
 
-        ListBudgetCommand listBudget = new ListBudgetCommand(false, listCategories);
+        ListBudgetCommand listBudget = new ListBudgetCommand(false, listCategories, startDate, endDate);
         listBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
-        assertEquals("Budget for shoes is $183.00\n"
-                + "Budget for food is $128.00\n"
-                + "Budget for places to go is $527.00\n"
-                + "test value category does not exist. Please add it first.\n"
-                + "Budget for sweets is $105.00\n", newUi.returnResponse());
+        assertEquals("Budget for shoes for 12/2018 is $183.00\n"
+                + "Budget for shoes for 1/2019 is $183.00\n"
+                + "Budget for shoes for 2/2019 is $183.00\n"
+                + "Budget for food for 12/2018 is $128.00\n"
+                + "Budget for food for 1/2019 is $128.00\n"
+                + "Budget for food for 2/2019 is $128.00\n"
+                + "Budget for places to go for 12/2018 is $527.00\n"
+                + "Budget for places to go for 1/2019 is $527.00\n"
+                + "Budget for places to go for 2/2019 is $527.00\n"
+                + "Your budget for Test Value for 12/2018 has not been set.  Please set it using budget set.\n"
+                + "Your budget for Test Value for 1/2018 has not been set.  Please set it using budget set.\n"
+                + "Your budget for Test Value for 2/2018 has not been set.  Please set it using budget set.\n"
+                + "Budget for sweets for 12/2018 is $105.00\n"
+                + "Budget for sweets for 1/2019 is $105.00\n"
+                + "Budget for sweets for 2/2019 is $105.00\n", newUi.returnResponse());
     }
 
     @Test
@@ -208,11 +231,14 @@ public class BudgetCommandTest {
         StorageStub newStorage = new StorageStub();
         Budget newBudget = new Budget();
 
-        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets);
+        LocalDate startDate = LocalDate.of(2017, 1, 15);
+        LocalDate endDate = LocalDate.of(2019, 12, 15);
+
+        SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets, startDate, endDate);
         setBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
-        LocalDate startDate = LocalDate.of(2019, 9, 15);
-        LocalDate endDate = LocalDate.of(2019, 11, 15);
+        startDate = LocalDate.of(2019, 9, 15);
+        endDate = LocalDate.of(2019, 11, 15);
 
         SavingsBudgetCommand savingsBudget = new SavingsBudgetCommand(false, categories, startDate, endDate);
         savingsBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
@@ -238,11 +264,11 @@ public class BudgetCommandTest {
         savingsBudget = new SavingsBudgetCommand(false, categories, startDate, null);
         savingsBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
-        assertEquals("The budget for shoes does not exist. Please set it using budget set.\n"
-                + "The budget for food does not exist. Please set it using budget set.\n"
+        assertEquals("The budget for shoes for 9/2019 does not exist. Please set it using budget set.\n"
+                + "The budget for food for 9/2019 does not exist. Please set it using budget set.\n"
                 + "Your savings for window for SEPTEMBER 2019 is: $788.00\n"
-                + "The budget for places to go does not exist. Please set it using budget set.\n"
-                + "The budget for sweets does not exist. Please set it using budget set.\n"
+                + "The budget for places to go for 9/2019 does not exist. Please set it using budget set.\n"
+                + "The budget for sweets for 9/2019 does not exist. Please set it using budget set.\n"
                 + "You have overspent your budget for laptop for SEPTEMBER 2019 by $74.11\n"
                 + "Your total savings: $713.89\n", newUi.returnResponse());
 

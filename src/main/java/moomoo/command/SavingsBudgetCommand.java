@@ -59,11 +59,6 @@ public class SavingsBudgetCommand extends Command {
                         + " Please create it first.\n";
                 continue;
             }
-            if (budget.getBudgetFromCategory(iteratorCategory.toLowerCase()) == 0) {
-                outputValue += "The budget for " + iteratorCategory + " does not exist."
-                        + " Please set it using budget set.\n";
-                continue;
-            }
 
             if (end == null) {
                 outputArray = viewSingleMonthSavings(budget, iteratorCategory, currentCategory, outputValue);
@@ -90,7 +85,15 @@ public class SavingsBudgetCommand extends Command {
                                             Category currentCategory, String outputVal) {
         double totalSavings = 0;
         String output = outputVal;
-        double savings = budget.getBudgetFromCategory(iteratorCategory)
+        if (budget.getBudgetFromCategoryMonthYear(iteratorCategory, start.getMonthValue(), start.getYear()) == 0) {
+            output += "The budget for " + iteratorCategory + " for " + start.getMonthValue() + "/"
+                    + start.getYear() + " does not exist."
+                    + " Please set it using budget set.\n";
+            return new String[]{output, Double.toString(totalSavings)};
+
+        }
+
+        double savings = budget.getBudgetFromCategoryMonthYear(iteratorCategory, start.getMonthValue(), start.getYear())
                 - currentCategory.getTotal(start.getMonthValue(), start.getYear());
 
         totalSavings += savings;
@@ -111,10 +114,10 @@ public class SavingsBudgetCommand extends Command {
 
     private String[] viewMultiMonthSaving(Budget budget, String iteratorCategory,
                                           Category currentCategory, String outputVal) {
-        int numberOfMonths = 0;
         int numberOfYears = end.getYear() - start.getYear();
         double totalExpenditure = 0;
         double totalSavings = 0;
+        double totalBudget = 0;
         String output = outputVal;
 
         if (numberOfYears > 0) {
@@ -122,8 +125,11 @@ public class SavingsBudgetCommand extends Command {
             int endMonthValue = 12;
             for (int currentYear = start.getYear(); currentYear <= end.getYear(); ++currentYear) {
                 for (int currentMonth = startMonthValue; currentMonth <= endMonthValue; ++currentMonth) {
-                    ++numberOfMonths;
-                    totalExpenditure += currentCategory.getTotal(currentMonth, currentYear);
+                    if (budget.getBudgetFromCategoryMonthYear(iteratorCategory, currentMonth, currentYear) != 0) {
+                        totalExpenditure += currentCategory.getTotal(currentMonth, currentYear);
+                        totalBudget += budget.getBudgetFromCategoryMonthYear(iteratorCategory,
+                                currentMonth, currentYear);
+                    }
 
                 }
                 startMonthValue = 1;
@@ -132,13 +138,13 @@ public class SavingsBudgetCommand extends Command {
                 }
             }
         } else {
-            numberOfMonths = end.getMonthValue() - start.getMonthValue() + 1;
             for (int i = start.getMonthValue(); i < end.getMonthValue() + 1; ++i) {
                 totalExpenditure += currentCategory.getTotal(i, start.getYear());
+                totalBudget += budget.getBudgetFromCategoryMonthYear(iteratorCategory, i, start.getYear());
+
             }
         }
-        double savings = (numberOfMonths * budget.getBudgetFromCategory(iteratorCategory))
-                - totalExpenditure;
+        double savings = totalBudget - totalExpenditure;
         totalSavings += savings;
 
         if (savings > 0) {
