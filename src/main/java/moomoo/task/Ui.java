@@ -241,7 +241,10 @@ public class Ui {
                 + "delete c/[Category name]\n"
                 + "add n/[Expenditure name] a/[Amount spent] c/[Category] d/[YYYY-MM-DD]\n"
                 + "sort\n"
-                + "budget\n"
+                + "budget set c/[Category Name] b/[Budget] s/[01/2019] e/[10/2019]\n"
+                + "budget edit c/[Category Name] b/[Budget] s/[01/2019] e/[10/2019]\n"
+                + "budget list c/[Category Name] s/[01/2019] e/[10/2019]\n"
+                + "budget savings c/[Category Name] s/[01/2019]\n"
                 + "schedule\n"
                 + "graph\n"
                 + "total";
