@@ -71,8 +71,6 @@ public class EditBudgetCommand extends Command {
                                 continue;
                             }
 
-
-
                             isUpdated = true;
                             budget.addNewBudgetMonthYear(categoryName, categoryBudget, currentMonth, currentYear);
 
@@ -99,7 +97,9 @@ public class EditBudgetCommand extends Command {
                     }
                 }
                 outputValue += "You have changed the budget for " + categoryName + " to $"
-                        + df.format(categoryBudget) + ". Please view the changed budget using budget list.\n";
+                        + df.format(categoryBudget) + " from " + start.getMonth() +  " " + start.getYear() + " to "
+                        + end.getMonth() + " " + end.getYear() + ". "
+                        + "Please view the changed budget using budget list.\n";
 
             } else {
                 outputValue += categoryName + " category does not exist. Please add it first.\n";

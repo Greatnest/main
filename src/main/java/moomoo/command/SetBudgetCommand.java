@@ -84,8 +84,9 @@ public class SetBudgetCommand extends Command {
                     }
                 }
                 outputValue += "You have set $" + df.format(categoryBudget) + " as the budget for "
-                        + categoryName + ". If the budget has already been set, no changes will be done. "
-                        + "Please use budget edit.\n";
+                        + categoryName + " from " + start.getMonth() +  " " + start.getYear() + " to "
+                        + end.getMonth() + " " + end.getYear() + ". "
+                        + "If the budget has already been set, no changes will be done.\n";
             } else {
                 outputValue += categoryName + " category does not exist. Please add it first.\n";
             }

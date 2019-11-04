@@ -2,7 +2,6 @@ package moomoo.command;
 
 import moomoo.stubs.CategoryStub;
 import moomoo.stubs.CategoryListStub;
-import moomoo.stubs.ExpenditureStub;
 import moomoo.stubs.ScheduleListStub;
 import moomoo.stubs.StorageStub;
 import moomoo.stubs.UiStub;
@@ -60,10 +59,10 @@ public class BudgetCommandTest {
         SetBudgetCommand setBudget = new SetBudgetCommand(false, categories, budgets, startDate, endDate);
         setBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
-        assertEquals("You have set $50.00 as the budget for shoes. If the budget has already been set, "
-                + "no changes will be done. Please use budget edit.\n"
-                + "You have set $100.00 as the budget for food. If the budget has already been set, "
-                + "no changes will be done. Please use budget edit.\n"
+        assertEquals("You have set $50.00 as the budget for shoes from SEPTEMBER 2017 to FEBRUARY 2019."
+                + " If the budget has already been set, no changes will be done.\n"
+                + "You have set $100.00 as the budget for food from SEPTEMBER 2017 to FEBRUARY 2019. "
+                + "If the budget has already been set, no changes will be done.\n"
                 + "Please set your budget for places to go to a value more than 0\n"
                 + "test value category does not exist. Please add it first.\n", newUi.returnResponse());
     }
@@ -115,10 +114,10 @@ public class BudgetCommandTest {
         EditBudgetCommand editBudget = new EditBudgetCommand(false, categories, budgets, startDate, endDate);
         editBudget.execute(newCalendar, newBudget, newCatList, newCategory, newUi, newStorage);
 
-        assertEquals("You have changed the budget for shoes to $300.00. "
+        assertEquals("You have changed the budget for shoes to $300.00 from SEPTEMBER 2017 to FEBRUARY 2019. "
                 + "Please view the changed budget using budget list.\n"
                 + "Please set your budget for window to a value more than 0\n"
-                + "You have changed the budget for sweets to $675.00. "
+                + "You have changed the budget for sweets to $675.00 from SEPTEMBER 2017 to FEBRUARY 2019. "
                 + "Please view the changed budget using budget list.\n"
                 + "invalid value category does not exist. Please add it first.\n", newUi.returnResponse());
     }
